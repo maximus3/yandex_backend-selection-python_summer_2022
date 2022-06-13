@@ -1,9 +1,10 @@
 import pytest
+from httpx import AsyncClient
 
 from database import create_session as real_create_session
 from tests.database import tmp_database_engine, tmp_database_name
 from tests.database.config import Session, prepare_db, remove_db
-from tests.static import user_proxy_data
+from app.creator import create_app
 
 
 @pytest.fixture()
@@ -17,11 +18,13 @@ def prepare_db_env(mocker):
 
 
 @pytest.fixture()
-def prepare_db_user_env(prepare_db_env):
-    user_proxy_data()[0].create(**user_proxy_data()[2])
-    yield
+def create_session(prepare_db_env):
+    return real_create_session
 
 
 @pytest.fixture()
-def create_session(prepare_db_env):
-    return real_create_session
+async def client():
+    async with AsyncClient(
+        app=create_app(), base_url='http://localhost:8090/'
+    ) as client:
+        yield client

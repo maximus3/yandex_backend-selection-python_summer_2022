@@ -1,4 +1,5 @@
 import logging
+from aiomisc.log import basic_config
 from pathlib import Path
 
 from pydantic import BaseSettings, Field
@@ -6,12 +7,6 @@ from pydantic import BaseSettings, Field
 logging_format = (
     '%(filename)s %(funcName)s [LINE:%(lineno)d]# '
     '%(levelname)-8s [%(asctime)s] %(name)s: %(message)s'
-)
-
-logging.basicConfig(
-    format=logging_format,
-    level=logging.INFO,
-    filename='app.log',
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,3 +22,10 @@ class ConfigData(BaseSettings):
 
 
 cfg = ConfigData()
+
+basic_config(
+    format=logging_format,
+    level=logging.DEBUG if cfg.debug else logging.INFO,
+    filename='app.log',
+    buffered=True,
+)
