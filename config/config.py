@@ -1,7 +1,7 @@
 import logging
-from aiomisc.log import basic_config
 from pathlib import Path
 
+from aiomisc.log import basic_config
 from pydantic import BaseSettings, Field
 
 logging_format = (

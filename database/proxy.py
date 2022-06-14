@@ -3,9 +3,9 @@ from typing import Any, Optional, Type, TypeVar
 from sqlalchemy.orm import Session as SessionType
 
 from database import create_session
-from database.models import BaseModel, User
+from database.models import BaseModel, ShopUnit
 from database.schemas import BaseModel as SchemaBaseModel
-from database.schemas import User as SchemaUser
+from database.schemas import ShopUnitSchema
 
 BaseProxyType = TypeVar('BaseProxyType', bound='BaseProxy')
 
@@ -15,7 +15,9 @@ class BaseProxy:
     SCHEMA_MODEL: Type[SchemaBaseModel] = SchemaBaseModel
 
     def __init__(self, model: BaseModel):
-        self.id = model.id
+        self.uuid = model.uuid
+        self.created_at = model.created_at
+        self.updated_at = model.updated_at
 
     def __eq__(self: BaseProxyType, other: object) -> bool:
         if not isinstance(other, BaseProxy):
@@ -142,11 +144,17 @@ class BaseProxy:
         return session.query(self.BASE_MODEL).get(self.id)
 
 
-class UserProxy(BaseProxy):
-    BASE_MODEL = User
-    SCHEMA_MODEL = SchemaUser
+class ShopUnitProxy(BaseProxy):
+    BASE_MODEL = ShopUnit
+    SCHEMA_MODEL = ShopUnitSchema
 
-    def __init__(self, user: User) -> None:
-        super().__init__(user)
-        self.username = user.username
-        self.password = user.password
+    def __init__(self, shop_unit: ShopUnit) -> None:
+        super().__init__(shop_unit)
+        self.id = shop_unit.id
+        self.name = shop_unit.name
+        self.type = shop_unit.type
+        self.price = shop_unit.price
+        self.parentId = shop_unit.id
+        self.date = shop_unit.date
+
+        self.children = [ShopUnitProxy(unit) for unit in shop_unit.children]

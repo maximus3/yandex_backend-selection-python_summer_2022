@@ -2,7 +2,6 @@ from fastapi import APIRouter
 
 from database.schemas import ErrorScheme, ShopUnitImportRequestSchema
 
-
 router = APIRouter(
     prefix='/imports',
     tags=['imports'],

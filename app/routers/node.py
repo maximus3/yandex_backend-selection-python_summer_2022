@@ -1,5 +1,6 @@
-from fastapi import APIRouter
 import datetime as dt
+
+from fastapi import APIRouter
 
 from database.schemas import ErrorScheme, ShopUnitStatisticResponseSchema
 
@@ -13,6 +14,8 @@ router = APIRouter(
 )
 
 
-@router.get('/{item_id}/statistic', response_model=ShopUnitStatisticResponseSchema)
+@router.get(
+    '/{item_id}/statistic', response_model=ShopUnitStatisticResponseSchema
+)
 async def nodes(item_id: str, dateStart: dt.datetime, dateEnd: dt.datetime):
     return {}

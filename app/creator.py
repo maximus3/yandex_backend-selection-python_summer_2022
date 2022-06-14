@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 
-from app.routers.imports import router as imports_router
 from app.routers.delete import router as delete_router
+from app.routers.imports import router as imports_router
+from app.routers.node import router as node_router
 from app.routers.nodes import router as nodes_router
 from app.routers.sales import router as sales_router
-from app.routers.node import router as node_router
 
 
 def create_app():

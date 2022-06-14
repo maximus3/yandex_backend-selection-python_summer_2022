@@ -1,9 +1,8 @@
+import datetime as dt
+from enum import Enum, unique
 from typing import Optional
 
 from pydantic import BaseModel
-from enum import Enum, unique
-import datetime as dt
-
 
 # class User(UserBase):
 #     class Config:
@@ -24,6 +23,9 @@ class ShopUnitSchema(BaseModel):
     type: ShopUnitType
     price: Optional[int]
     children: Optional[list['ShopUnitSchema']]
+
+    class Config:
+        orm_mode = True
 
 
 class ShopUnitImportSchema(BaseModel):

@@ -1,8 +1,8 @@
-from fastapi import APIRouter
 import datetime as dt
 
-from database.schemas import ErrorScheme, ShopUnitStatisticResponseSchema
+from fastapi import APIRouter
 
+from database.schemas import ErrorScheme, ShopUnitStatisticResponseSchema
 
 router = APIRouter(
     prefix='/sales',

@@ -2,7 +2,6 @@ from fastapi import APIRouter
 
 from database.schemas import ErrorScheme
 
-
 router = APIRouter(
     prefix='/delete',
     tags=['delete'],
