@@ -16,6 +16,8 @@ async def check_import_ok(web_client, batches):
     for batch in batches:
         response = await web_client.post('/imports', json=batch)
         assert response.status_code == 200
+        print(ShopUnitProxy.get_all())
+        print(batch['items'])
         for item in batch['items']:
             model = ShopUnitProxy.get(id=item['id'])
             assert model is not None

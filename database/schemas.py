@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 @unique
-class ShopUnitType(Enum):
+class ShopUnitType(str, Enum):
     OFFER = 'OFFER'
     CATEGORY = 'CATEGORY'
 
