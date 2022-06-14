@@ -19,5 +19,6 @@ router = APIRouter(
 
 @router.post('')
 async def imports(data: ShopUnitImportRequestSchema) -> int:
-    logger.debug('Got new import request: %s', data.json())
+    for item in data.items:
+        logger.debug('Got new import item: %s', item)
     return 200
