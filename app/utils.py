@@ -6,4 +6,4 @@ def iso_8601_to_datetime(date_str: str) -> dt.datetime:
 
 
 def datetime_to_iso_8601(date_obj: dt.datetime) -> str:
-    return date_obj.isoformat() + 'Z'
+    return date_obj.isoformat() + '.000Z'
