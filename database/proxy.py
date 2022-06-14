@@ -22,10 +22,10 @@ class BaseProxy:
     def __eq__(self: BaseProxyType, other: object) -> bool:
         if not isinstance(other, BaseProxy):
             return NotImplemented
-        return self.id == other.id
+        return self.uuid == other.uuid
 
     def __repr__(self) -> str:
-        return f'<{self.__class__.__name__}(id={self.id!r})>'
+        return f'<{self.__class__.__name__}(uuid={self.uuid!r})>'
 
     @classmethod
     def get(
@@ -127,7 +127,9 @@ class BaseProxy:
             with create_session() as new_session:
                 return self.update(new_session, **kwargs)
         model = (
-            session.query(self.BASE_MODEL).filter_by(id=self.id).one_or_none()
+            session.query(self.BASE_MODEL)
+            .filter_by(uuid=self.uuid)
+            .one_or_none()
         )
         if model is None:
             return None
@@ -141,7 +143,7 @@ class BaseProxy:
         return self
 
     def get_me(self: BaseProxyType, session: SessionType) -> BaseModel:
-        return session.query(self.BASE_MODEL).get(self.id)
+        return session.query(self.BASE_MODEL).get(self.uuid)
 
 
 class ShopUnitProxy(BaseProxy):

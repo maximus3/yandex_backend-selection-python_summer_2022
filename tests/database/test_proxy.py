@@ -124,7 +124,7 @@ def test_proxy_update_none(
     prepare_db_shop_unit_single_env, model, model_schema, parameters
 ):
     proxy_model = model.get(**parameters)
-    proxy_model.id = -1
+    proxy_model.uuid = -1
     assert proxy_model.update(**parameters) is None
 
 

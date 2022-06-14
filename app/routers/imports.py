@@ -1,6 +1,10 @@
+import logging
+
 from fastapi import APIRouter
 
 from database.schemas import ErrorScheme, ShopUnitImportRequestSchema
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix='/imports',
@@ -14,5 +18,6 @@ router = APIRouter(
 
 
 @router.post('')
-async def imports(data: ShopUnitImportRequestSchema):
+async def imports(data: ShopUnitImportRequestSchema) -> int:
+    logger.debug('Got new import request: %s', data.json())
     return 200

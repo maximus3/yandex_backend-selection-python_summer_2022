@@ -1,6 +1,10 @@
+import logging
+
 from fastapi import APIRouter
 
 from database.schemas import ErrorScheme
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix='/delete',
@@ -14,5 +18,6 @@ router = APIRouter(
 
 
 @router.delete('/{item_id}')
-async def delete(item_id: str):
+async def delete(item_id: str) -> int:
+    logger.debug('Deleting item %s', item_id)
     return 200
