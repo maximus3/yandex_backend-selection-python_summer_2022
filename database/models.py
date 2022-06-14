@@ -45,5 +45,5 @@ class ShopUnit(BaseModel):
     children = sa.orm.relationship(
         'ShopUnit',
         backref=sa.orm.backref('parent', remote_side=[id]),
-        cascade='all, delete-orphan',
+        cascade='all, delete',
     )

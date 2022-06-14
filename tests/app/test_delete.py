@@ -14,4 +14,5 @@ async def test_imports_post_ok(
     for batch in import_batches_data:
         for item in batch['items']:
             model = ShopUnitProxy.get(id=item['id'])
+            print(model.id)
             assert model is None

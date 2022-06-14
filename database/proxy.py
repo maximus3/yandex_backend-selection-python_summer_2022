@@ -142,6 +142,16 @@ class BaseProxy:
         session.add(model)
         return self
 
+    def delete(self: BaseProxyType, session: SessionType = None) -> bool:
+        if session is None:
+            with create_session() as new_session:
+                return self.delete(new_session)
+        model = self.get_me(session)
+        if model is None:
+            return False
+        session.delete(model)
+        return True
+
     def get_me(self: BaseProxyType, session: SessionType) -> BaseModel:
         return session.query(self.BASE_MODEL).get(self.uuid)
 
