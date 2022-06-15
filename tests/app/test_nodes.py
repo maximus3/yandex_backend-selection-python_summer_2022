@@ -1,4 +1,4 @@
-from tests.utils import deep_sort_children
+from tests.utils import deep_sort_children, print_diff
 
 
 async def test_nodes_get_not_found(client, import_batches_data):
@@ -18,4 +18,6 @@ async def test_nodes_get_ok(
     data = response.json()
     deep_sort_children(data)
     deep_sort_children(expected_tree_data)
-    # assert data == expected_tree_data, f'See {print_diff(expected_tree_data, data)}'
+    assert (
+        data == expected_tree_data
+    ), f'see {print_diff(expected_tree_data, data)}'

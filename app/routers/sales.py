@@ -1,4 +1,3 @@
-import datetime as dt
 import logging
 from typing import Any, Union
 
@@ -20,7 +19,9 @@ router = APIRouter(
 
 @router.get('', response_model=ShopUnitStatisticResponseSchema)
 async def sales(
-    date: dt.datetime,
-) -> Union[ShopUnitStatisticResponseSchema, dict[str, Any]]:
+    date: str,
+) -> Union[ShopUnitStatisticResponseSchema, list[dict[str, Any]]]:
     logger.debug('Getting sales for %s', date)
-    return {}
+    return ShopUnitStatisticResponseSchema(
+        items=[{'id': 'id', 'name': 'name', 'date': date, 'type': 'CATEGORY'}]
+    )

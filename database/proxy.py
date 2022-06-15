@@ -1,12 +1,16 @@
+import logging
 from typing import Any, Optional, Type, TypeVar
 
 from sqlalchemy.orm import Session as SessionType
 
 from database import create_session
 from database.models import BaseModel, ShopUnit
+from database.proxy_utils import update_delete_price, update_price
 from database.schemas import BaseModel as SchemaBaseModel
 from database.schemas import ShopUnitSchema
 from database.shop_unit_type import ShopUnitType
+
+logger = logging.getLogger(__name__)
 
 BaseProxyType = TypeVar('BaseProxyType', bound='BaseProxy')
 
@@ -99,11 +103,16 @@ class BaseProxy:
             with create_session() as new_session:
                 model = cls.get(new_session, **kwargs)
                 if model:
+                    logger.debug('%s already exists', cls.__name__)
                     return model
-                if not cls.create(new_session, **kwargs):
-                    return None
+            if not cls.create(**kwargs):
+                logger.debug(
+                    'Failed to create %s with %s', cls.__name__, kwargs
+                )
+                return None
             with create_session() as new_session:
                 return cls.get(new_session, **kwargs)
+        logger.debug('session is not None')
         return None
 
     @classmethod
@@ -123,7 +132,7 @@ class BaseProxy:
         self: BaseProxyType,
         session: SessionType = None,
         **kwargs: Any,
-    ) -> Optional[BaseProxyType]:
+    ) -> bool:
         if session is None:
             with create_session() as new_session:
                 return self.update(new_session, **kwargs)
@@ -133,23 +142,21 @@ class BaseProxy:
             .one_or_none()
         )
         if model is None:
-            return None
+            return False
         for key, value in kwargs.items():
             if hasattr(model, key) and hasattr(self, key):
                 setattr(model, key, value)
                 setattr(self, key, value)
             else:
-                return None
+                return False
         session.add(model)
-        return self
+        return True
 
     def delete(self: BaseProxyType, session: SessionType = None) -> bool:
         if session is None:
             with create_session() as new_session:
                 return self.delete(new_session)
         model = self.get_me(session)
-        if model is None:
-            return False
         session.delete(model)
         return True
 
@@ -172,6 +179,7 @@ class ShopUnitProxy(BaseProxy):
         self.price = shop_unit.price
         self.parentId = shop_unit.parentId
         self.date = shop_unit.date
+        self.offers_count = shop_unit.offers_count
 
         self.children = [ShopUnitProxy(unit) for unit in shop_unit.children]
 
@@ -181,23 +189,96 @@ class ShopUnitProxy(BaseProxy):
         session: SessionType = None,
         **kwargs: Any,
     ) -> bool:
+        if session is None:
+            with create_session() as new_session:
+                logger.debug('_create with %s', kwargs)
+                if not cls._create(new_session, **kwargs):
+                    return False
+            return True
+        logger.debug('session is not None')
+        return False
+
+    @classmethod
+    def _create(
+        cls: Type[ShopUnitProxyType],
+        session: SessionType,
+        **kwargs: Any,
+    ) -> bool:
+        if session is None:
+            raise ValueError('session is None')
+        logger.debug('creating %s with %s', cls.__name__, kwargs)
         if kwargs.get('parentId') is not None:
             parent_model = cls.get(session, id=kwargs['parentId'])
             if parent_model is None:
                 return False
             if parent_model.type == ShopUnitType.OFFER:
                 return False
+
+        if not update_price(False, cls, session, **kwargs):
+            return False
+
         return super().create(session, **kwargs)
 
     def update(
         self: ShopUnitProxyType,
         session: SessionType = None,
         **kwargs: Any,
-    ) -> Optional[ShopUnitProxyType]:
+    ) -> bool:
+        if session is None:
+            with create_session() as new_session:
+                if not self._update(new_session, **kwargs):
+                    return False
+            return True
+        logger.debug('session is not None')
+        return False
+
+    def _update(
+        self: ShopUnitProxyType,
+        session: SessionType,
+        **kwargs: Any,
+    ) -> bool:
+        if session is None:
+            raise ValueError('session is None')
         if kwargs.get('parentId') is not None:
             parent_model = self.get(session, id=kwargs['parentId'])
             if parent_model is None:
-                return None
+                return False
             if parent_model.type == ShopUnitType.OFFER:
-                return None
+                return False
+
+        if not update_price(True, self, session, **kwargs):
+            return False
+
         return super().update(session, **kwargs)
+
+    def _update_now(
+        self: ShopUnitProxyType,
+        session: SessionType,
+        **kwargs: Any,
+    ) -> bool:
+        return super().update(session, **kwargs)
+
+    def delete(self: ShopUnitProxyType, session: SessionType = None) -> bool:
+        if session is None:
+            with create_session() as new_session:
+                if not self._delete(new_session):
+                    return False
+            return True
+        logger.debug('session is not None')
+        return False
+
+    def _delete(self: ShopUnitProxyType, session: SessionType) -> bool:
+        if session is None:
+            raise ValueError('session is None')
+        if not update_delete_price(
+            session,
+            self,
+            self.parentId,
+            None,
+            self.type == ShopUnitType.OFFER,
+            self.offers_count,
+            self.price,
+        ):
+            return False
+
+        return super().delete(session)

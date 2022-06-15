@@ -41,6 +41,7 @@ class ShopUnit(BaseModel):
         sa.String, sa.ForeignKey('shop_unit.id'), nullable=True
     )
     date = sa.Column(sa.String, nullable=False)
+    offers_count = sa.Column(sa.Integer, nullable=True)
 
     children = sa.orm.relationship(
         'ShopUnit',

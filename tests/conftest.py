@@ -8,6 +8,7 @@ from tests.database.config import Session, prepare_db, remove_db
 from tests.static import (
     EXPECTED_TREE,
     IMPORT_BATCHES,
+    IMPORTS_AND_NODES_DATA,
     import_batches_proxy_data,
     shop_unit_proxy_data_single,
 )
@@ -56,6 +57,14 @@ async def client(prepare_db_env):
 
 
 @pytest.fixture()
+def proxy_delete_mock(prepare_db_env, mocker):
+    mocker.patch(
+        'database.proxy.ShopUnitProxy.delete', lambda *args, **kwargs: False
+    )
+    yield
+
+
+@pytest.fixture()
 def import_batches_data():
     return IMPORT_BATCHES[:]
 
@@ -63,3 +72,8 @@ def import_batches_data():
 @pytest.fixture()
 def expected_tree_data():
     return EXPECTED_TREE.copy()
+
+
+@pytest.fixture()
+def imports_and_nodes_data():
+    return IMPORTS_AND_NODES_DATA[:]

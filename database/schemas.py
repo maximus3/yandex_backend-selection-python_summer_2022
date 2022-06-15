@@ -15,23 +15,13 @@ class ShopUnitSchema(BaseModel):
     price: Optional[int]
     children: Optional[list['ShopUnitSchema']]
 
-    @validator('date')
-    def dvalidator_date(cls, value: str) -> str:
-        return validators.date_must_be_iso_8601(value)
-
-    @validator('price', always=True)
-    def validate_price(
-        cls, value: Optional[int], values: dict[str, Any]
-    ) -> Optional[int]:
-        return validators.validate_price(value, values)
-
     @validator('children', always=True)
-    def validate_children(cls, value: Optional[list['ShopUnitSchema']], values: dict[str, Any]) -> Optional[list['ShopUnitSchema']]:
+    def validate_children(
+        cls, value: Optional[list['ShopUnitSchema']], values: dict[str, Any]
+    ) -> Optional[list['ShopUnitSchema']]:
         obj_type = values['type']
 
         if obj_type == ShopUnitType.OFFER:
-            if value:
-                raise ValueError('children is not allowed for OFFER')
             return None
 
         return value or []

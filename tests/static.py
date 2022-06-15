@@ -193,3 +193,179 @@ def shop_unit_proxy_data_single():
             },
         ),
     ]
+
+
+IMPORTS_AND_NODES_DATA = [
+    (
+        {
+            'items': [
+                {
+                    'type': 'CATEGORY',
+                    'name': 'Категория',
+                    'id': 'id1',
+                },
+                {
+                    'type': 'CATEGORY',
+                    'name': 'Подкатегория 1',
+                    'id': 'id11',
+                    'parentId': 'id1',
+                },
+                {
+                    'type': 'CATEGORY',
+                    'name': 'Подкатегория 2',
+                    'id': 'id12',
+                    'parentId': 'id1',
+                },
+                {
+                    'type': 'OFFER',
+                    'name': 'Товар',
+                    'id': 'tovar',
+                    'price': 100,
+                    'parentId': 'id1',
+                },
+            ],
+            'updateDate': '2022-02-01T12:00:00.000Z',
+        },
+        {
+            'type': 'CATEGORY',
+            'name': 'Категория',
+            'id': 'id1',
+            'price': 100,
+            'parentId': None,
+            'date': '2022-02-01T12:00:00.000Z',
+            'children': [
+                {
+                    'type': 'CATEGORY',
+                    'name': 'Подкатегория 1',
+                    'id': 'id11',
+                    'price': None,
+                    'parentId': 'id1',
+                    'date': '2022-02-01T12:00:00.000Z',
+                    'children': [],
+                },
+                {
+                    'type': 'CATEGORY',
+                    'name': 'Подкатегория 2',
+                    'id': 'id12',
+                    'price': None,
+                    'parentId': 'id1',
+                    'date': '2022-02-01T12:00:00.000Z',
+                    'children': [],
+                },
+                {
+                    'type': 'OFFER',
+                    'name': 'Товар',
+                    'id': 'tovar',
+                    'price': 100,
+                    'parentId': 'id1',
+                    'date': '2022-02-01T12:00:00.000Z',
+                    'children': None,
+                },
+            ],
+        },
+    ),
+    (
+        {
+            'items': [
+                {
+                    'type': 'OFFER',
+                    'name': 'Товар',
+                    'id': 'tovar',
+                    'price': 100,
+                    'parentId': 'id11',
+                }
+            ],
+            'updateDate': '2022-02-01T13:00:00.000Z',
+        },
+        {
+            'type': 'CATEGORY',
+            'name': 'Категория',
+            'id': 'id1',
+            'price': 100,
+            'parentId': None,
+            'date': '2022-02-01T13:00:00.000Z',
+            'children': [
+                {
+                    'type': 'CATEGORY',
+                    'name': 'Подкатегория 1',
+                    'id': 'id11',
+                    'price': 100,
+                    'parentId': 'id1',
+                    'date': '2022-02-01T13:00:00.000Z',
+                    'children': [
+                        {
+                            'type': 'OFFER',
+                            'name': 'Товар',
+                            'id': 'tovar',
+                            'price': 100,
+                            'parentId': 'id11',
+                            'date': '2022-02-01T13:00:00.000Z',
+                            'children': None,
+                        }
+                    ],
+                },
+                {
+                    'type': 'CATEGORY',
+                    'name': 'Подкатегория 2',
+                    'id': 'id12',
+                    'price': None,
+                    'parentId': 'id1',
+                    'date': '2022-02-01T12:00:00.000Z',
+                    'children': [],
+                },
+            ],
+        },
+    ),
+    (
+        {
+            'items': [
+                {
+                    'type': 'OFFER',
+                    'name': 'Товар',
+                    'id': 'tovar',
+                    'price': 100,
+                    'parentId': 'id12',
+                }
+            ],
+            'updateDate': '2022-02-01T14:00:00.000Z',
+        },
+        {
+            'type': 'CATEGORY',
+            'name': 'Категория',
+            'id': 'id1',
+            'price': 100,
+            'parentId': None,
+            'date': '2022-02-01T14:00:00.000Z',
+            'children': [
+                {
+                    'type': 'CATEGORY',
+                    'name': 'Подкатегория 1',
+                    'id': 'id11',
+                    'price': None,
+                    'parentId': 'id1',
+                    'date': '2022-02-01T14:00:00.000Z',
+                    'children': [],
+                },
+                {
+                    'type': 'CATEGORY',
+                    'name': 'Подкатегория 2',
+                    'id': 'id12',
+                    'price': 100,
+                    'parentId': 'id1',
+                    'date': '2022-02-01T14:00:00.000Z',
+                    'children': [
+                        {
+                            'type': 'OFFER',
+                            'name': 'Товар',
+                            'id': 'tovar',
+                            'price': 100,
+                            'parentId': 'id12',
+                            'date': '2022-02-01T14:00:00.000Z',
+                            'children': None,
+                        }
+                    ],
+                },
+            ],
+        },
+    ),
+]
