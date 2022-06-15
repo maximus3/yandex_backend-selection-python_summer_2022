@@ -170,7 +170,7 @@ class ShopUnitProxy(BaseProxy):
         self.name = shop_unit.name
         self.type = shop_unit.type
         self.price = shop_unit.price
-        self.parentId = shop_unit.id
+        self.parentId = shop_unit.parentId
         self.date = shop_unit.date
 
         self.children = [ShopUnitProxy(unit) for unit in shop_unit.children]
