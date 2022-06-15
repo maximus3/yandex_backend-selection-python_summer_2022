@@ -6,6 +6,7 @@ from database import create_session
 from database.models import BaseModel, ShopUnit
 from database.schemas import BaseModel as SchemaBaseModel
 from database.schemas import ShopUnitSchema
+from database.shop_unit_type import ShopUnitType
 
 BaseProxyType = TypeVar('BaseProxyType', bound='BaseProxy')
 
@@ -156,6 +157,9 @@ class BaseProxy:
         return session.query(self.BASE_MODEL).get(self.uuid)
 
 
+ShopUnitProxyType = TypeVar('ShopUnitProxyType', bound='ShopUnitProxy')
+
+
 class ShopUnitProxy(BaseProxy):
     BASE_MODEL = ShopUnit
     SCHEMA_MODEL = ShopUnitSchema
@@ -170,3 +174,30 @@ class ShopUnitProxy(BaseProxy):
         self.date = shop_unit.date
 
         self.children = [ShopUnitProxy(unit) for unit in shop_unit.children]
+
+    @classmethod
+    def create(
+        cls: Type[ShopUnitProxyType],
+        session: SessionType = None,
+        **kwargs: Any,
+    ) -> bool:
+        if kwargs.get('parentId') is not None:
+            parent_model = cls.get(session, id=kwargs['parentId'])
+            if parent_model is None:
+                return False
+            if parent_model.type == ShopUnitType.OFFER:
+                return False
+        return super().create(session, **kwargs)
+
+    def update(
+        self: ShopUnitProxyType,
+        session: SessionType = None,
+        **kwargs: Any,
+    ) -> Optional[ShopUnitProxyType]:
+        if kwargs.get('parentId') is not None:
+            parent_model = self.get(session, id=kwargs['parentId'])
+            if parent_model is None:
+                return None
+            if parent_model.type == ShopUnitType.OFFER:
+                return None
+        return super().update(session, **kwargs)

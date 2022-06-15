@@ -2,11 +2,11 @@ import pytest
 from httpx import AsyncClient
 
 from app.creator import create_app
-from app.utils import iso_8601_to_datetime
 from database import create_session as real_create_session
 from tests.database import tmp_database_engine, tmp_database_name
 from tests.database.config import Session, prepare_db, remove_db
 from tests.static import (
+    EXPECTED_TREE,
     IMPORT_BATCHES,
     import_batches_proxy_data,
     shop_unit_proxy_data_single,
@@ -27,7 +27,7 @@ def prepare_db_env(mocker):
 def prepare_db_shop_unit_env(prepare_db_env):
     model_list, model_schema_list, batch_list = import_batches_proxy_data()
     for model, _, batch in zip(model_list, model_schema_list, batch_list):
-        date = iso_8601_to_datetime(batch['updateDate'])
+        date = batch['updateDate']
         for item in batch['items']:
             model.create(
                 **item,
@@ -58,3 +58,8 @@ async def client(prepare_db_env):
 @pytest.fixture()
 def import_batches_data():
     return IMPORT_BATCHES[:]
+
+
+@pytest.fixture()
+def expected_tree_data():
+    return EXPECTED_TREE.copy()

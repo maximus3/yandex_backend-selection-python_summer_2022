@@ -1,5 +1,3 @@
-import datetime as dt
-
 from database import proxy, schemas
 
 IMPORT_BATCHES = [
@@ -179,9 +177,7 @@ def shop_unit_proxy_data_single():
                 'name': 'Товары',
                 'id': '069cb8d7-bbdd-47d3-ad8f-82ef4c269df1',
                 'parentId': None,
-                'date': dt.datetime.strptime(
-                    '2022-02-03T15:00:00.000Z', '%Y-%m-%dT%H:%M:%S.%fZ'
-                ),
+                'date': '2022-02-03T15:00:00.000Z',
             },
         ),
         (
@@ -193,9 +189,7 @@ def shop_unit_proxy_data_single():
                 'id': '863e1a7a-1304-42ae-943b-179184c077e3',
                 'parentId': None,
                 'price': 79999,
-                'date': dt.datetime.strptime(
-                    '2022-02-03T15:00:00.000Z', '%Y-%m-%dT%H:%M:%S.%fZ'
-                ),
+                'date': '2022-02-03T15:00:00.000Z',
             },
         ),
     ]

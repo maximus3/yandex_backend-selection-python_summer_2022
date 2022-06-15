@@ -40,7 +40,7 @@ class ShopUnit(BaseModel):
     parentId = sa.Column(
         sa.String, sa.ForeignKey('shop_unit.id'), nullable=True
     )
-    date = sa.Column(sa.DateTime, nullable=False)
+    date = sa.Column(sa.String, nullable=False)
 
     children = sa.orm.relationship(
         'ShopUnit',
