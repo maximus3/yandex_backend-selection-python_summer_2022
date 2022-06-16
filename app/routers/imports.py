@@ -27,22 +27,6 @@ async def imports(data: ShopUnitImportRequestSchema) -> int:
             status_code=400,
             detail='Duplicate id in items',
         )
-    for item in data.items:
-        logger.debug('Got new import item: %s', item)
-        model = ShopUnitProxy.get(id=item.id)
-        if model is None:
-            if ShopUnitProxy.create(**item.dict(), date=data.updateDate):
-                logger.debug('Created new import item: %s', item)
-                continue
-            logger.debug('Failed to create new item: %s', item)
-            raise HTTPException(status_code=400, detail='Item creation failed')
-
-        if model.type != item.type:
-            logger.debug('Item type mismatch: %s', item)
-            raise HTTPException(status_code=400, detail='Item type mismatch')
-        if model.update(**item.dict(), date=data.updateDate):
-            logger.debug('Updated import item: %s', item)
-            continue
-        logger.debug('Failed to update item: %s', item)
-        raise HTTPException(status_code=400, detail='Item update failed')
+    if not ShopUnitProxy.create_batch(data.updateDate, data.items):
+        raise HTTPException(status_code=400, detail='Items creation failed')
     return 200

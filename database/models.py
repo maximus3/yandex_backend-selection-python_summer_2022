@@ -48,3 +48,14 @@ class ShopUnit(BaseModel):
         backref=sa.orm.backref('parent', remote_side=[id]),
         cascade='all, delete',
     )
+
+
+class ShopUnitStatisticUnit(BaseModel):
+    __tablename__ = 'shop_unit_statistic_unit'
+
+    id = sa.Column(sa.String, nullable=False)
+    name = sa.Column(sa.String, nullable=False)
+    type = sa.Column(sa.String, nullable=False)
+    price = sa.Column(sa.Integer, nullable=True)
+    parentId = sa.Column(sa.String, nullable=True)
+    date = sa.Column(sa.DateTime, nullable=False)

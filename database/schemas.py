@@ -1,4 +1,5 @@
-from typing import Any, Optional
+import datetime as dt
+from typing import Any, Optional, Union
 
 from pydantic import BaseModel, validator
 
@@ -56,20 +57,17 @@ class ShopUnitImportRequestSchema(BaseModel):
 class ShopUnitStatisticUnitSchema(BaseModel):
     id: str
     name: str
-    date: str
+    date: Union[str, dt.datetime]
     parentId: Optional[str]
     type: ShopUnitType
     price: Optional[int]
 
     @validator('date')
-    def dvalidator_date(cls, value: str) -> str:
-        return validators.date_must_be_iso_8601(value)
+    def dvalidator_date(cls, value: Union[str, dt.datetime]) -> str:
+        return validators.date_to_iso_8601(value)
 
-    @validator('price', always=True)
-    def validate_price(
-        cls, value: Optional[int], values: dict[str, Any]
-    ) -> Optional[int]:
-        return validators.validate_price(value, values)
+    class Config:
+        orm_mode = True
 
 
 class ShopUnitStatisticResponseSchema(BaseModel):

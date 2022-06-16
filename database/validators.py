@@ -1,7 +1,14 @@
-from typing import Any, Optional
+import datetime as dt
+from typing import Any, Optional, Union
 
 from app.utils import datetime_to_iso_8601, iso_8601_to_datetime
 from database.shop_unit_type import ShopUnitType
+
+
+def date_to_iso_8601(value: Union[str, dt.datetime]) -> str:
+    if isinstance(value, str):
+        return value
+    return datetime_to_iso_8601(value)
 
 
 def date_must_be_iso_8601(value: str) -> str:

@@ -3,9 +3,11 @@ from httpx import AsyncClient
 
 from app.creator import create_app
 from database import create_session as real_create_session
+from database.schemas import ShopUnitImportRequestSchema
 from tests.database import tmp_database_engine, tmp_database_name
 from tests.database.config import Session, prepare_db, remove_db
 from tests.static import (
+    EXPECTED_STATISTIC,
     EXPECTED_TREE,
     IMPORT_BATCHES,
     IMPORTS_AND_NODES_DATA,
@@ -28,19 +30,20 @@ def prepare_db_env(mocker):
 def prepare_db_shop_unit_env(prepare_db_env):
     model_list, model_schema_list, batch_list = import_batches_proxy_data()
     for model, _, batch in zip(model_list, model_schema_list, batch_list):
-        date = batch['updateDate']
-        for item in batch['items']:
-            model.create(
-                **item,
-                date=date,
-            )
+        data = ShopUnitImportRequestSchema(
+            items=batch['items'], updateDate=batch['updateDate']
+        )
+        model.create_batch(data.updateDate, data.items)
     yield
 
 
 @pytest.fixture()
 def prepare_db_shop_unit_single_env(prepare_db_env):
     for model, _, parameters in shop_unit_proxy_data_single():
-        model.create(**parameters)
+        data = ShopUnitImportRequestSchema(
+            updateDate=parameters.pop('date'), items=[parameters]
+        )
+        model.create_batch(data.updateDate, data.items)
 
 
 @pytest.fixture()
@@ -72,6 +75,11 @@ def import_batches_data():
 @pytest.fixture()
 def expected_tree_data():
     return EXPECTED_TREE.copy()
+
+
+@pytest.fixture()
+def expected_statistic():
+    return EXPECTED_STATISTIC.copy()
 
 
 @pytest.fixture()

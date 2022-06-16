@@ -152,6 +152,43 @@ EXPECTED_TREE = {
     ],
 }
 
+EXPECTED_STATISTIC = {
+    'items': [
+        {
+            'type': 'CATEGORY',
+            'name': 'Товары',
+            'id': '069cb8d7-bbdd-47d3-ad8f-82ef4c269df1',
+            'date': '2022-02-01T12:00:00.000Z',
+            'parentId': None,
+            'price': None,
+        },
+        {
+            'type': 'CATEGORY',
+            'name': 'Товары',
+            'id': '069cb8d7-bbdd-47d3-ad8f-82ef4c269df1',
+            'date': '2022-02-02T12:00:00.000Z',
+            'parentId': None,
+            'price': 69999,
+        },
+        {
+            'type': 'CATEGORY',
+            'name': 'Товары',
+            'id': '069cb8d7-bbdd-47d3-ad8f-82ef4c269df1',
+            'date': '2022-02-03T12:00:00.000Z',
+            'parentId': None,
+            'price': 55749,
+        },
+        {
+            'type': 'CATEGORY',
+            'name': 'Товары',
+            'id': '069cb8d7-bbdd-47d3-ad8f-82ef4c269df1',
+            'date': '2022-02-03T15:00:00.000Z',
+            'parentId': None,
+            'price': 58599,
+        },
+    ]
+}
+
 
 def import_batches_proxy_data():
     return (

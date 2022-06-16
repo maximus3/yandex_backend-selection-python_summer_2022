@@ -2,6 +2,11 @@ import json
 import subprocess
 
 
+def sort_items(node):
+    if node.get('items'):
+        node['items'].sort(key=lambda x: x['date'])
+
+
 def deep_sort_children(node):
     if node.get('children'):
         node['children'].sort(key=lambda x: x['id'])

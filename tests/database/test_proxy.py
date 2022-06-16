@@ -39,18 +39,6 @@ def test_proxy_create(prepare_db_env, model, model_schema, parameters):
     ('model', 'model_schema', 'parameters'),
     shop_unit_proxy_data_single(),
 )
-def test_proxy_create_session_is_not_none(
-    prepare_db_env, create_session, model, model_schema, parameters
-):
-    with create_session() as session:
-        assert model.create(session, **parameters) is False
-        assert model.get(session, **parameters) is None
-
-
-@pytest.mark.parametrize(
-    ('model', 'model_schema', 'parameters'),
-    shop_unit_proxy_data_single(),
-)
 def test_proxy_get_or_create(prepare_db_env, model, model_schema, parameters):
     assert model.get_or_create(**parameters) is not None
     assert model.get(**parameters) is not None
@@ -192,21 +180,6 @@ def test_proxy_update(
     ('model', 'model_schema', 'parameters'),
     shop_unit_proxy_data_single(),
 )
-def test_proxy_update_session_is_not_none(
-    prepare_db_shop_unit_single_env,
-    create_session,
-    model,
-    model_schema,
-    parameters,
-):
-    with create_session() as session:
-        assert model.get(**parameters).update(session, **parameters) is False
-
-
-@pytest.mark.parametrize(
-    ('model', 'model_schema', 'parameters'),
-    shop_unit_proxy_data_single(),
-)
 def test_proxy_delete_session_is_not_none(
     prepare_db_shop_unit_single_env,
     create_session,
@@ -240,7 +213,7 @@ def test_can_not_call_private_methods_without_session(
         ShopUnitProxy.get_all()[0]._delete(None)
 
     with pytest.raises(ValueError):
-        ShopUnitProxy.get_all()[0]._update(None)
+        ShopUnitProxy.get_all()[0]._update(None, set())
 
     with pytest.raises(ValueError):
-        ShopUnitProxy._create(None)
+        ShopUnitProxy._create(None, set())
