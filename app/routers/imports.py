@@ -40,7 +40,7 @@ async def imports(data: ShopUnitImportRequestSchema) -> int:
         if model.type != item.type:
             logger.debug('Item type mismatch: %s', item)
             raise HTTPException(status_code=400, detail='Item type mismatch')
-        if model.update(date=data.updateDate, **item.dict()):
+        if model.update(**item.dict(), date=data.updateDate):
             logger.debug('Updated import item: %s', item)
             continue
         logger.debug('Failed to update item: %s', item)

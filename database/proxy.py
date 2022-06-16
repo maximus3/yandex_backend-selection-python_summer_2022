@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session as SessionType
 
 from database import create_session
 from database.models import BaseModel, ShopUnit
-from database.proxy_utils import update_delete_price, update_price
 from database.schemas import BaseModel as SchemaBaseModel
 from database.schemas import ShopUnitSchema
 from database.shop_unit_type import ShopUnitType
@@ -214,7 +213,10 @@ class ShopUnitProxy(BaseProxy):
             if parent_model.type == ShopUnitType.OFFER:
                 return False
 
-        if not update_price(False, cls, session, **kwargs):
+        kwargs['offers_count'] = (
+            1 if kwargs['type'] == ShopUnitType.OFFER else 0
+        )
+        if not cls._update_price_in_tree(session, kwargs):
             return False
 
         return super().create(session, **kwargs)
@@ -239,6 +241,7 @@ class ShopUnitProxy(BaseProxy):
     ) -> bool:
         if session is None:
             raise ValueError('session is None')
+
         if kwargs.get('parentId') is not None:
             parent_model = self.get(session, id=kwargs['parentId'])
             if parent_model is None:
@@ -246,12 +249,18 @@ class ShopUnitProxy(BaseProxy):
             if parent_model.type == ShopUnitType.OFFER:
                 return False
 
-        if not update_price(True, self, session, **kwargs):
+        kwargs['offers_count'] = self.offers_count
+        cur_kwargs_dict = {
+            'parentId': self.parentId,
+            'offers_count': self.offers_count,
+            'price': self.price,
+        }
+        if not self._update_price_in_tree(session, kwargs, cur_kwargs_dict):
             return False
 
         return super().update(session, **kwargs)
 
-    def _update_now(
+    def update_now(
         self: ShopUnitProxyType,
         session: SessionType,
         **kwargs: Any,
@@ -270,15 +279,128 @@ class ShopUnitProxy(BaseProxy):
     def _delete(self: ShopUnitProxyType, session: SessionType) -> bool:
         if session is None:
             raise ValueError('session is None')
-        if not update_delete_price(
-            session,
-            self,
-            self.parentId,
-            None,
-            self.type == ShopUnitType.OFFER,
-            self.offers_count,
-            self.price,
-        ):
+        kwargs_dict = {
+            'parentId': self.parentId,
+            'offers_count': self.offers_count,
+            'price': self.price,
+        }
+        if not self._update_delete_price(session, kwargs_dict):
             return False
 
         return super().delete(session)
+
+    @classmethod
+    def _update_delete_price(
+        cls: Type[ShopUnitProxyType],
+        session: SessionType,
+        was_kwargs: dict[str, Any],
+        date: Optional[str] = None,
+    ) -> bool:
+        parent_id = was_kwargs['parentId']
+        offers_count = was_kwargs['offers_count']
+        price = was_kwargs['price']
+
+        while parent_id:
+            parent_model = cls.get_expect(session, id=parent_id)
+
+            new_offers_count = parent_model.offers_count - offers_count
+            was_price = parent_model.price
+            new_avg_price = None
+            if new_offers_count > 0:
+                new_avg_price = (
+                    was_price * parent_model.offers_count
+                    - price * offers_count
+                ) / new_offers_count
+            if not parent_model.update_now(
+                session, price=new_avg_price, offers_count=new_offers_count
+            ):
+                logger.debug(
+                    'parent_model._update_now(%s, price=%s, offers_count=%s) failed',
+                    session,
+                    new_avg_price,
+                    new_offers_count,
+                )
+                return False
+            if date:
+                if not parent_model.update_now(session, date=date):
+                    logger.debug(
+                        'parent_model._update_now(%s, date=%s) failed',
+                        session,
+                        date,
+                    )
+                    return False
+            parent_id = parent_model.parentId
+
+        return True
+
+    @classmethod
+    def _update_price_in_tree(
+        cls: Type[ShopUnitProxyType],
+        session: SessionType,
+        new_kwargs: dict[str, Any],
+        was_kwargs: Optional[dict[str, Any]] = None,
+    ) -> bool:
+        parent_id = new_kwargs['parentId']
+        if was_kwargs and parent_id != was_kwargs['parentId']:
+            if not cls._update_delete_price(
+                session, was_kwargs, new_kwargs['date']
+            ):
+                logger.debug('_update_delete_price failed')
+                return False
+            was_kwargs = None
+
+        is_update = was_kwargs is not None
+
+        while parent_id:
+            parent_model = cls.get_expect(session, id=parent_id)
+            if not parent_model.update_now(session, date=new_kwargs['date']):
+                logger.debug(
+                    'parent_model.update_now(%s, date=%s) failed',
+                    session,
+                    new_kwargs['date'],
+                )
+                return False
+            parent_id = parent_model.parentId
+
+            if new_kwargs['offers_count'] <= 0:
+                continue
+
+            was_offers_count = parent_model.offers_count or 0
+            new_offers_count = (
+                was_offers_count
+                if is_update
+                else was_offers_count + new_kwargs['offers_count']
+            )
+
+            was_price = parent_model.price or 0
+            new_sum_price = was_price * was_offers_count
+            if new_kwargs['type'] == ShopUnitType.OFFER:
+                new_sum_price += (
+                    new_kwargs['price'] * new_kwargs['offers_count']
+                )
+                if was_kwargs is not None:
+                    new_sum_price -= (
+                        was_kwargs['price'] * was_kwargs['offers_count']
+                    )
+                new_avg_price = new_sum_price / new_offers_count
+            else:
+                if was_kwargs is not None:
+                    new_sum_price += (
+                        was_kwargs['price'] * was_kwargs['offers_count']
+                    )
+                    new_avg_price = new_sum_price / new_offers_count
+                else:
+                    new_avg_price = was_price
+
+            if not parent_model.update_now(
+                session, price=new_avg_price, offers_count=new_offers_count
+            ):
+                logger.debug(
+                    'parent_model.update_now(%s, price=%s, offers_count=%s) failed',
+                    session,
+                    new_avg_price,
+                    new_offers_count,
+                )
+                return False
+
+        return True
