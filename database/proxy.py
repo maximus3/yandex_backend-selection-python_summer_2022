@@ -187,7 +187,9 @@ class ShopUnitProxy(BaseProxy):
         self.price = shop_unit.price
         self.parentId = shop_unit.parentId
         self.date = shop_unit.date
+
         self.offers_count = shop_unit.offers_count
+        self.children_prices_sum = shop_unit.children_prices_sum
 
         self.children = [ShopUnitProxy(unit) for unit in shop_unit.children]
 
@@ -375,18 +377,18 @@ class ShopUnitProxy(BaseProxy):
             parent_model = cls.get_expect(session, id=parent_id)
 
             new_offers_count = parent_model.offers_count - offers_count
-            was_price = parent_model.price
+            was_sum_price = parent_model.children_prices_sum
             new_avg_price = None
+            new_sum_price = None
             if new_offers_count > 0:
-                new_avg_price = (
-                    was_price * parent_model.offers_count
-                    - price * offers_count
-                ) / new_offers_count
+                new_sum_price = was_sum_price - price * offers_count
+                new_avg_price = new_sum_price // new_offers_count
             if not parent_model.update_now(
                 session,
                 updated_models,
                 price=new_avg_price,
                 offers_count=new_offers_count,
+                children_prices_sum=new_sum_price,
             ):
                 logger.debug(
                     'parent_model._update_now(%s, price=%s, offers_count=%s) failed',
@@ -409,6 +411,56 @@ class ShopUnitProxy(BaseProxy):
 
         return True
 
+    @staticmethod
+    def _get_new_prices_and_count(
+        parent_model: ShopUnitProxyType,
+        is_update: bool,
+        new_kwargs: dict[str, Any],
+        was_kwargs: Optional[dict[str, Any]],
+    ) -> tuple[int, int, int]:
+        was_offers_count = parent_model.offers_count or 0
+        new_offers_count = (
+            was_offers_count
+            if is_update
+            else was_offers_count + new_kwargs['offers_count']
+        )
+        logger.debug('was_offers_count = %s', was_offers_count)
+        logger.debug('new_offers_count = %s', new_offers_count)
+
+        was_price = parent_model.price or 0
+        was_sum_price = parent_model.children_prices_sum or 0
+        new_sum_price = was_sum_price
+        logger.debug('was_price = %s', was_price)
+        logger.debug('was_sum_price = %s', was_sum_price)
+        logger.debug('new_sum_price = %s', new_sum_price)
+        if new_kwargs['type'] == ShopUnitType.OFFER:
+            new_sum_price += new_kwargs['price'] * new_kwargs['offers_count']
+            logger.debug('offer, new_sum_price = %s', new_sum_price)
+            if was_kwargs is not None:
+                new_sum_price -= (
+                    was_kwargs['price'] * was_kwargs['offers_count']
+                )
+                logger.debug('update, new_sum_price = %s', new_sum_price)
+            new_avg_price = new_sum_price // new_offers_count
+        else:
+            if was_kwargs is not None:
+                new_sum_price += (
+                    was_kwargs['price'] * was_kwargs['offers_count']
+                )
+                logger.debug(
+                    'category, update, new_sum_price = %s', new_sum_price
+                )
+                new_avg_price = new_sum_price // new_offers_count
+            else:
+                new_avg_price = was_price
+                logger.debug(
+                    'category, new_sum_price = was_price = %d',
+                    new_sum_price,
+                )
+        logger.debug('new_avg_price = %s', new_avg_price)
+
+        return new_avg_price, new_sum_price, new_offers_count
+
     @classmethod
     def _update_price_in_tree(
         cls: Type[ShopUnitProxyType],
@@ -419,11 +471,13 @@ class ShopUnitProxy(BaseProxy):
     ) -> bool:
         parent_id = new_kwargs.get('parentId')
         if was_kwargs and parent_id != was_kwargs.get('parentId'):
+            logger.debug('parentId is changed')
             if not cls._update_delete_price(
                 session, updated_models, was_kwargs, new_kwargs['date']
             ):
                 logger.debug('_update_delete_price failed')
                 return False
+            logger.debug('_update_delete_price ok')
             was_kwargs = None
 
         is_update = was_kwargs is not None
@@ -444,44 +498,28 @@ class ShopUnitProxy(BaseProxy):
             if new_kwargs['offers_count'] <= 0:
                 continue
 
-            was_offers_count = parent_model.offers_count or 0
-            new_offers_count = (
-                was_offers_count
-                if is_update
-                else was_offers_count + new_kwargs['offers_count']
+            (
+                new_avg_price,
+                new_sum_price,
+                new_offers_count,
+            ) = cls._get_new_prices_and_count(
+                parent_model, is_update, new_kwargs, was_kwargs
             )
-
-            was_price = parent_model.price or 0
-            new_sum_price = was_price * was_offers_count
-            if new_kwargs['type'] == ShopUnitType.OFFER:
-                new_sum_price += (
-                    new_kwargs['price'] * new_kwargs['offers_count']
-                )
-                if was_kwargs is not None:
-                    new_sum_price -= (
-                        was_kwargs['price'] * was_kwargs['offers_count']
-                    )
-                new_avg_price = new_sum_price / new_offers_count
-            else:
-                if was_kwargs is not None:
-                    new_sum_price += (
-                        was_kwargs['price'] * was_kwargs['offers_count']
-                    )
-                    new_avg_price = new_sum_price / new_offers_count
-                else:
-                    new_avg_price = was_price
 
             if not parent_model.update_now(
                 session,
                 updated_models,
                 price=new_avg_price,
                 offers_count=new_offers_count,
+                children_prices_sum=new_sum_price,
             ):
                 logger.debug(
-                    'parent_model.update_now(%s, price=%s, offers_count=%s) failed',
+                    'parent_model.update_now(%s, price=%s, offers_count=%s, '
+                    'children_prices_sum=%s) failed',
                     session,
                     new_avg_price,
                     new_offers_count,
+                    new_sum_price,
                 )
                 return False
 
