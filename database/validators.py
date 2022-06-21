@@ -11,7 +11,7 @@ def date_to_iso_8601(value: Union[str, dt.datetime]) -> str:
     return datetime_to_iso_8601(value)
 
 
-def date_must_be_iso_8601(value: str) -> str:
+def date_must_be_iso_8601(value: str) -> str:  # TODO: check iso 8601 format
     try:
         dt_format = iso_8601_to_datetime(value)
         if datetime_to_iso_8601(dt_format) != value:
