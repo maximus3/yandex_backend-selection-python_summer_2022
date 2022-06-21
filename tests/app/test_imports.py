@@ -484,5 +484,25 @@ async def test_imports_post_parent_ok(client):
 
 
 async def test_imports_post_error_in_last(client):
-    print()  # TODO check in all files print and TODO
-    assert True  # TODO
+    response = await client.post(
+        '/imports',
+        json={
+            'items': [
+                {
+                    'type': 'CATEGORY',
+                    'name': 'Категория',
+                    'id': 'id1',
+                },
+                {
+                    'type': 'OFFER',
+                    'name': 'Товар неправильный',
+                    'id': 'id2',
+                },
+            ],
+            'updateDate': '2022-02-01T12:00:00.000Z',
+        },
+    )
+    assert response.status_code == 400
+
+    assert ShopUnitProxy.get(id='id1') is None
+    assert ShopUnitProxy.get(id='id2') is None

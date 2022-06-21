@@ -38,14 +38,22 @@ class ShopUnit(BaseModel):
     type = sa.Column(sa.String, nullable=False)
     price = sa.Column(sa.Integer, nullable=True)
     parentId = sa.Column(
-        sa.String, sa.ForeignKey('shop_unit.id'), nullable=True
+        sa.String,
+        sa.ForeignKey('shop_unit.id', ondelete='CASCADE'),
+        nullable=True,
     )
     date = sa.Column(sa.String, nullable=False)
+
     offers_count = sa.Column(sa.Integer, nullable=True)
+    children_prices_sum = sa.Column(sa.Integer, nullable=True)  # TODO
 
     children = sa.orm.relationship(
         'ShopUnit',
         backref=sa.orm.backref('parent', remote_side=[id]),
+        cascade='all, delete',
+    )
+    stats = sa.orm.relationship(
+        'ShopUnitStatisticUnit',
         cascade='all, delete',
     )
 
@@ -53,7 +61,11 @@ class ShopUnit(BaseModel):
 class ShopUnitStatisticUnit(BaseModel):
     __tablename__ = 'shop_unit_statistic_unit'
 
-    id = sa.Column(sa.String, nullable=False)
+    id = sa.Column(
+        sa.String,
+        sa.ForeignKey('shop_unit.id', ondelete='CASCADE'),
+        nullable=False,
+    )
     name = sa.Column(sa.String, nullable=False)
     type = sa.Column(sa.String, nullable=False)
     price = sa.Column(sa.Integer, nullable=True)

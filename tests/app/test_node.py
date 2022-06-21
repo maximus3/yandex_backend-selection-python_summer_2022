@@ -1,7 +1,7 @@
 import datetime as dt
 
 from app.utils import datetime_to_iso_8601, iso_8601_to_datetime
-from database.proxy import ShopUnitProxy
+from database.proxy import ShopUnitProxy, ShopUnitStatisticUnitProxy
 from tests.utils import print_diff, sort_items
 
 
@@ -57,7 +57,7 @@ async def test_statistic_ok(
     ), f'see {print_diff(expected_statistic, statistic)}'
 
 
-async def test_statistic_get_deleted(
+async def test_statistic_get_deleted_and_children(
     prepare_db_shop_unit_env, client, import_batches_data, expected_statistic
 ):
     ShopUnitProxy.get(id=import_batches_data[0]['items'][0]['id']).delete()
@@ -66,9 +66,13 @@ async def test_statistic_get_deleted(
         iso_8601_to_datetime(import_batches_data[-1]['updateDate'])
         + dt.timedelta(1)
     )
-    response = await client.get(
-        f'/node/{import_batches_data[0]["items"][0]["id"]}/statistic?'
-        f'date_start={date_start}&'
-        f'date_end={date_end}'
-    )
-    assert response.status_code == 404
+    for batch in import_batches_data:
+        for item in batch['items']:
+            item_id = item['id']
+            response = await client.get(
+                f'/node/{item_id}/statistic?'
+                f'date_start={date_start}&'
+                f'date_end={date_end}'
+            )
+            assert response.status_code == 404
+            assert ShopUnitStatisticUnitProxy.get_all(id=item_id) == []

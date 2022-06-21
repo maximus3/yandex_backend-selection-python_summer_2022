@@ -356,7 +356,6 @@ class ShopUnitProxy(BaseProxy):
         }
         if not self._update_delete_price(session, UpdateSet(), kwargs_dict):
             return False
-        # TODO: delete stats by children
 
         return super().delete(session)
 

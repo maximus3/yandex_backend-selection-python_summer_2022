@@ -2,6 +2,7 @@ import pytest
 from sqlalchemy.exc import InvalidRequestError
 
 from database.proxy import ShopUnitProxy
+from database.utils import UpdateSet
 from tests.static import shop_unit_proxy_data_single
 
 
@@ -213,7 +214,7 @@ def test_can_not_call_private_methods_without_session(
         ShopUnitProxy.get_all()[0]._delete(None)
 
     with pytest.raises(ValueError):
-        ShopUnitProxy.get_all()[0]._update(None, set())
+        ShopUnitProxy.get_all()[0]._update(None, UpdateSet())
 
     with pytest.raises(ValueError):
-        ShopUnitProxy._create(None, set())
+        ShopUnitProxy._create(None, UpdateSet())
