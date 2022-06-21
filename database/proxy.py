@@ -592,26 +592,31 @@ class ShopUnitStatisticUnitProxy(BaseProxy):
     def __hash__(self) -> int:
         return hash(self.id)
 
-    def __eq__(self, other: ShopUnitStatisticUnitProxyType) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ShopUnitStatisticUnitProxy):
+            return NotImplemented
         return self.id == other.id
 
     @classmethod
     def get_last_modified(
-            cls,
-            date: dt.datetime,
-            delta_days: int = 1,
-            session: SessionType = None,
+        cls,
+        date: dt.datetime,
+        delta_days: int = 1,
+        session: SessionType = None,
     ) -> UpdateSet:
         if session is None:
             with create_session() as new_session:
                 return cls.get_last_modified(date, session=new_session)
         data = UpdateSet()
         for model in (
-                session.query(cls.BASE_MODEL).filter(
-                    cls.BASE_MODEL.date >= date - dt.timedelta(days=delta_days),
-                    cls.BASE_MODEL.date <= date,
-                    cls.BASE_MODEL.type == ShopUnitType.OFFER,
-                ).order_by(cls.BASE_MODEL.date).all()
+            session.query(cls.BASE_MODEL)
+            .filter(
+                cls.BASE_MODEL.date >= date - dt.timedelta(days=delta_days),
+                cls.BASE_MODEL.date <= date,
+                cls.BASE_MODEL.type == ShopUnitType.OFFER,
+            )
+            .order_by(cls.BASE_MODEL.date)
+            .all()
         ):
             data.add(cls(model))
         return data
