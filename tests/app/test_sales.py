@@ -4,7 +4,7 @@ async def test_sales_no_date(client, import_batches_data):
 
 
 async def test_sales_wrong_date_format(client, import_batches_data):
-    response = await client.get(f'/sales?date=2022-02-01T12:00:00')
+    response = await client.get(f'/sales?date=2022-02')
     assert response.status_code == 400
 
 

@@ -1,8 +1,11 @@
 import datetime as dt
+import logging
 from typing import Any, Optional, Union
 
 from app.utils import datetime_to_iso_8601, iso_8601_to_datetime
 from database.shop_unit_type import ShopUnitType
+
+logger = logging.getLogger(__name__)
 
 
 def date_to_iso_8601(value: Union[str, dt.datetime]) -> str:
@@ -11,12 +14,14 @@ def date_to_iso_8601(value: Union[str, dt.datetime]) -> str:
     return datetime_to_iso_8601(value)
 
 
-def date_must_be_iso_8601(value: str) -> str:  # TODO: check iso 8601 format
+def date_must_be_iso_8601(value: str) -> str:
     try:
         dt_format = iso_8601_to_datetime(value)
-        if datetime_to_iso_8601(dt_format) != value:
-            raise ValueError()
+        new_value = datetime_to_iso_8601(dt_format)
+        if new_value != value:
+            raise ValueError(f'Convert back failed: {new_value} != {value}')
     except ValueError as exc:
+        logger.exception('date validate failed')
         raise ValueError('date must be in ISO 8601 format') from exc
     return value
 
