@@ -5,7 +5,7 @@ from tests.utils import print_diff, sort_items
 
 
 async def test_statistic_offer(
-    prepare_db_shop_unit_env, client, import_batches_data, expected_statistic
+    prepare_db_shop_unit_env, client, import_batches_data
 ):
     item_id = import_batches_data[1]['items'][1]['id']
     date_start = import_batches_data[0]['updateDate']
