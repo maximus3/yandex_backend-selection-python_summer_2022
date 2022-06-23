@@ -16,6 +16,7 @@ class ConfigData(BaseSettings):
     DATABASE_ENGINE: str = Field('sqlite:///data.db', env='DATABASE_ENGINE')
     DATABASE_NAME: str = Field('data.db', env='DATABASE_NAME')
     debug: bool = Field(True, env='DEBUG')
+    port: int = Field(80, env='PORT')
 
     class Config:
         env_file: Path = BASE_DIR / '.env'

@@ -54,7 +54,7 @@ def create_session(prepare_db_env):
 @pytest.fixture()
 async def client(prepare_db_env):
     async with AsyncClient(
-        app=create_app(), base_url='http://localhost:8090/'
+        app=create_app(), base_url='http://localhost:80/'
     ) as client:
         yield client
 

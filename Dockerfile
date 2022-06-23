@@ -37,8 +37,8 @@ COPY Makefile Makefile
 COPY app app
 COPY config config
 COPY database database
+COPY online_tests online_tests
 COPY tests tests
 
 ENTRYPOINT []
-RUN make check
 CMD ["make", "run"]

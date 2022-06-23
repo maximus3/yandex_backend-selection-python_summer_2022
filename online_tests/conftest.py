@@ -9,7 +9,7 @@ from tests.static import (
     IMPORTS_AND_NODES_DATA,
 )
 
-API_BASEURL = 'http://localhost:8090/'
+API_BASEURL = 'http://localhost:80/'
 
 
 @pytest.fixture()

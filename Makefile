@@ -98,3 +98,6 @@ docker-clean: ## Docker prune -f
 
 .PHONY: docker
 docker: docker-clean docker-build docker-up docker-clean ## Docker prune, up, run and prune
+
+.PHONY: docker-d
+docker-d: docker-clean docker-build docker-up-d ## Docker prune, up detach, run
