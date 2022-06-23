@@ -1,5 +1,5 @@
 CODE = app config database
-CODE_FORMAT = $(CODE) tests
+CODE_FORMAT = $(CODE) tests online_tests
 
 VENV = .venv
 ifeq ($(OS),Windows_NT)
@@ -13,7 +13,7 @@ endif
 POETRY_VERSION=1.1.13
 POETRY_RUN = poetry run
 
-TEST = $(POETRY_RUN) pytest --verbosity=2 --showlocals --log-level=DEBUG
+TEST = $(POETRY_RUN) pytest tests --verbosity=2 --showlocals --log-level=DEBUG
 
 
 .PHONY: help
