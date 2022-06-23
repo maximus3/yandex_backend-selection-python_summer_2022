@@ -34,4 +34,4 @@ lint:
 test:
   stage: test
   script:
-    - pytest --verbosity=2 --showlocals --log-level=DEBUG --cov
+    - pytest tests --verbosity=2 --showlocals --log-level=DEBUG --cov
