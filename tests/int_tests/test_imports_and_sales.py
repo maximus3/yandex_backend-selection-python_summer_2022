@@ -110,26 +110,3 @@ async def test_have_many_modif_in_24h(client):
     assert (
         response.json() == result
     ), f'see {print_diff(result, response.json())}'
-
-
-async def test_have_many_modif_in_24h_inverse(client):
-    result = {
-        'items': [
-            {
-                'type': 'OFFER',
-                'name': 'Товар',
-                'id': 'id_1',
-                'price': 100,
-                'parentId': 'id',
-                'date': '2022-02-01T12:00:00.000Z',
-            }
-        ]
-    }
-    await send_imports_request(client)
-    await send_update_request(client, '2022-02-01T11:00:00.000Z')
-
-    response = await client.get(f'/sales?date=2022-02-01T12:00:00.000Z')
-    assert response.status_code == 200, response.json()
-    assert (
-        response.json() == result
-    ), f'see {print_diff(result, response.json())}'

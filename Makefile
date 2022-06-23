@@ -41,6 +41,10 @@ run: ## Run App
 test: ## Runs pytest with coverage
 	$(TEST) --cov
 
+.PHONY: online-test
+online-test: ## Runs online tests
+	$(POETRY_RUN) pytest online_tests --verbosity=2 --showlocals --log-level=DEBUG
+
 .PHONY: test-fast
 test-fast: ## Runs pytest with exitfirst
 	$(TEST) --exitfirst

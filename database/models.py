@@ -47,6 +47,8 @@ class ShopUnit(BaseModel):
     offers_count = sa.Column(sa.Integer, nullable=True)
     children_prices_sum = sa.Column(sa.Integer, nullable=True)
 
+    dt_date = sa.Column(sa.DateTime, nullable=False)
+
     children = sa.orm.relationship(
         'ShopUnit',
         backref=sa.orm.backref('parent', remote_side=[id]),

@@ -191,6 +191,8 @@ class ShopUnitProxy(BaseProxy):
         self.offers_count = shop_unit.offers_count
         self.children_prices_sum = shop_unit.children_prices_sum
 
+        self.dt_date = shop_unit.dt_date
+
         self.children = [ShopUnitProxy(unit) for unit in shop_unit.children]
 
     def __hash__(self) -> int:
@@ -279,7 +281,9 @@ class ShopUnitProxy(BaseProxy):
 
         updated_models.add(json.dumps(kwargs))
 
-        return super().create(session, **kwargs)
+        return super().create(
+            session, dt_date=iso_8601_to_datetime(kwargs['date']), **kwargs
+        )
 
     def update(
         self: ShopUnitProxyType,
@@ -324,11 +328,15 @@ class ShopUnitProxy(BaseProxy):
         if not self._update_price_in_tree(
             session, updated_models, kwargs, cur_kwargs_dict
         ):
+            logger.debug('_update_price_in_tree failed')
             return False
+        logger.debug('_update_price_in_tree ok')
 
         updated_models.add(self)
 
-        return super().update(session, **kwargs)
+        return super().update(
+            session, dt_date=iso_8601_to_datetime(kwargs['date']), **kwargs
+        )
 
     def update_now(
         self: ShopUnitProxyType,
@@ -567,6 +575,29 @@ class ShopUnitProxy(BaseProxy):
             return False
         return True
 
+    @classmethod
+    def get_last_modified(
+        cls,
+        date: dt.datetime,
+        delta_days: int = 1,
+        session: SessionType = None,
+    ) -> list['ShopUnitProxy']:
+        if session is None:
+            with create_session() as new_session:
+                return cls.get_last_modified(date, session=new_session)
+        data = []
+        for model in (
+            session.query(cls.BASE_MODEL)
+            .filter(
+                cls.BASE_MODEL.dt_date >= date - dt.timedelta(days=delta_days),
+                cls.BASE_MODEL.dt_date <= date,
+                cls.BASE_MODEL.type == ShopUnitType.OFFER,
+            )
+            .all()
+        ):
+            data.append(cls(model))
+        return data
+
 
 ShopUnitStatisticUnitProxyType = TypeVar(
     'ShopUnitStatisticUnitProxyType', bound='ShopUnitStatisticUnitProxy'
@@ -596,30 +627,6 @@ class ShopUnitStatisticUnitProxy(BaseProxy):
         if not isinstance(other, ShopUnitStatisticUnitProxy):
             return NotImplemented
         return self.id == other.id
-
-    @classmethod
-    def get_last_modified(
-        cls,
-        date: dt.datetime,
-        delta_days: int = 1,
-        session: SessionType = None,
-    ) -> UpdateSet:
-        if session is None:
-            with create_session() as new_session:
-                return cls.get_last_modified(date, session=new_session)
-        data = UpdateSet()
-        for model in (
-            session.query(cls.BASE_MODEL)
-            .filter(
-                cls.BASE_MODEL.date >= date - dt.timedelta(days=delta_days),
-                cls.BASE_MODEL.date <= date,
-                cls.BASE_MODEL.type == ShopUnitType.OFFER,
-            )
-            .order_by(cls.BASE_MODEL.date)
-            .all()
-        ):
-            data.add(cls(model))
-        return data
 
     @classmethod
     def get_all_filter(
