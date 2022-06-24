@@ -59,7 +59,7 @@ async def test_imports_post_not_iso_8601(client):
                     'id': 'id',
                 }
             ],
-            'updateDate': '2022-02-01T12:00:00',
+            'updateDate': '2022-02-32T12:00:00',
         },
     )
     assert response.status_code == 400
@@ -76,7 +76,7 @@ async def test_imports_post_not_iso_8601_with_dot(client):
                     'id': 'id',
                 }
             ],
-            'updateDate': '2022-02-01T12:00:00.000',
+            'updateDate': '2022-02-32T12:00:00.000',
         },
     )
     assert response.status_code == 400

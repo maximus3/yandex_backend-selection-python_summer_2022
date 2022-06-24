@@ -11,6 +11,13 @@ async def test_statistics_no_data(client, import_batches_data):
     assert response.status_code == 400
 
 
+async def test_statistics_no_iso8601(prepare_db_shop_unit_env, client, import_batches_data):
+    response = await client.get(
+        f'/node/{import_batches_data[0]["items"][0]["id"]}/statistic?dateStart=123&dateEnd=456'
+    )
+    assert response.status_code == 400
+
+
 async def test_statistic_empty(
     prepare_db_shop_unit_env, client, import_batches_data
 ):

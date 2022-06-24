@@ -189,49 +189,6 @@ EXPECTED_STATISTIC = {
     ]
 }
 
-
-def import_batches_proxy_data():
-    return (
-        [proxy.ShopUnitProxy for _ in range(len(IMPORT_BATCHES))],
-        [schemas.ShopUnitSchema for _ in range(len(IMPORT_BATCHES))],
-        IMPORT_BATCHES[:],
-    )
-
-
-def shop_unit_proxy_data():
-    return [
-        import_batches_proxy_data(),
-    ]
-
-
-def shop_unit_proxy_data_single():
-    return [
-        (
-            proxy.ShopUnitProxy,
-            schemas.ShopUnitSchema,
-            {
-                'type': 'CATEGORY',
-                'name': 'Товары',
-                'id': '069cb8d7-bbdd-47d3-ad8f-82ef4c269df1',
-                'parentId': None,
-                'date': '2022-02-03T15:00:00.000Z',
-            },
-        ),
-        (
-            proxy.ShopUnitProxy,
-            schemas.ShopUnitSchema,
-            {
-                'type': 'OFFER',
-                'name': 'jPhone 13',
-                'id': '863e1a7a-1304-42ae-943b-179184c077e3',
-                'parentId': None,
-                'price': 79999,
-                'date': '2022-02-03T15:00:00.000Z',
-            },
-        ),
-    ]
-
-
 IMPORTS_AND_NODES_DATA = [
     (
         {
@@ -406,3 +363,45 @@ IMPORTS_AND_NODES_DATA = [
         },
     ),
 ]
+
+
+def import_batches_proxy_data(): # pragma: no cover
+    return (
+        [proxy.ShopUnitProxy for _ in range(len(IMPORT_BATCHES))],
+        [schemas.ShopUnitSchema for _ in range(len(IMPORT_BATCHES))],
+        IMPORT_BATCHES[:],
+    )
+
+
+def shop_unit_proxy_data(): # pragma: no cover
+    return [
+        import_batches_proxy_data(),
+    ]
+
+
+def shop_unit_proxy_data_single(): # pragma: no cover
+    return [
+        (
+            proxy.ShopUnitProxy,
+            schemas.ShopUnitSchema,
+            {
+                'type': 'CATEGORY',
+                'name': 'Товары',
+                'id': '069cb8d7-bbdd-47d3-ad8f-82ef4c269df1',
+                'parentId': None,
+                'date': '2022-02-03T15:00:00.000Z',
+            },
+        ),
+        (
+            proxy.ShopUnitProxy,
+            schemas.ShopUnitSchema,
+            {
+                'type': 'OFFER',
+                'name': 'jPhone 13',
+                'id': '863e1a7a-1304-42ae-943b-179184c077e3',
+                'parentId': None,
+                'price': 79999,
+                'date': '2022-02-03T15:00:00.000Z',
+            },
+        ),
+    ]

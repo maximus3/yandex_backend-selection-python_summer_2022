@@ -16,10 +16,7 @@ def date_to_iso_8601(value: Union[str, dt.datetime]) -> str:
 
 def date_must_be_iso_8601(value: str) -> str:
     try:
-        dt_format = iso_8601_to_datetime(value)
-        new_value = datetime_to_iso_8601(dt_format)
-        if new_value != value:
-            raise ValueError(f'Convert back failed: {new_value} != {value}')
+        iso_8601_to_datetime(value)
     except ValueError as exc:
         logger.exception('date validate failed')
         raise ValueError('date must be in ISO 8601 format') from exc
