@@ -1,7 +1,7 @@
 import datetime as dt
 
 from app.utils import datetime_to_iso_8601, iso_8601_to_datetime
-from tests.utils import print_diff, sort_items
+from tests_data.utils import print_diff, sort_items
 
 
 async def test_statistic_offer(

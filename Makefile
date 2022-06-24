@@ -1,5 +1,5 @@
 CODE = app config database
-CODE_FORMAT = $(CODE) tests online_tests
+CODE_FORMAT = $(CODE) tests online_tests tests_data
 
 VENV = .venv
 ifeq ($(OS),Windows_NT)

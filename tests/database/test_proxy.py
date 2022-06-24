@@ -3,7 +3,7 @@ from sqlalchemy.exc import InvalidRequestError
 
 from database.proxy import ShopUnitProxy
 from database.utils import UpdateSet
-from tests.static import shop_unit_proxy_data_single
+from tests_data.static import shop_unit_proxy_data_single
 
 
 @pytest.mark.parametrize(

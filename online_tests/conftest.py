@@ -1,13 +1,13 @@
 import pytest
 from httpx import AsyncClient
 
-from online_tests.utils import clear_used_ids
-from tests.static import (
+from tests_data.static import (
     EXPECTED_STATISTIC,
     EXPECTED_TREE,
     IMPORT_BATCHES,
     IMPORTS_AND_NODES_DATA,
 )
+from tests_data.utils import clear_used_ids
 
 API_BASEURL = 'http://localhost:80/'
 

@@ -1,4 +1,4 @@
-from tests.utils import print_diff
+from tests_data.utils import print_diff
 
 
 async def send_imports_request(client):

@@ -1,4 +1,4 @@
-from tests.utils import deep_sort_children, print_diff
+from tests_data.utils import deep_sort_children, print_diff
 
 
 async def test_nodes_get_not_found(client, import_batches_data):

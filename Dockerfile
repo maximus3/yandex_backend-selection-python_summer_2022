@@ -39,6 +39,7 @@ COPY config config
 COPY database database
 COPY online_tests online_tests
 COPY tests tests
+COPY tests_data tests_data
 
 ENTRYPOINT []
 CMD ["make", "run"]

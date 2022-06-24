@@ -6,7 +6,7 @@ from database import create_session as real_create_session
 from database.schemas import ShopUnitImportRequestSchema
 from tests.database import tmp_database_engine, tmp_database_name
 from tests.database.config import Session, prepare_db, remove_db
-from tests.static import (
+from tests_data.static import (
     EXPECTED_STATISTIC,
     EXPECTED_TREE,
     IMPORT_BATCHES,

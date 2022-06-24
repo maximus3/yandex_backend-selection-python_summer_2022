@@ -2,6 +2,11 @@ import json
 import subprocess
 
 
+async def clear_used_ids(client, used_ids):
+    for used_id in used_ids:
+        await client.delete(f'delete/{used_id}')
+
+
 def sort_items(node):
     if node.get('items'):
         node['items'].sort(key=lambda x: x['date'])
