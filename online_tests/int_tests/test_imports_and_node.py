@@ -90,3 +90,96 @@ async def test_statistic_offer(
     statistic = response.json()
     sort_items(statistic)
     assert statistic == result_2, f'see {print_diff(result_2, statistic)}'
+
+
+async def test_statistic_cat(client):
+    dates = [
+        '2022-02-01T12:00:00.000Z',
+        '2022-02-01T13:00:00.000Z',
+        '2022-02-01T14:00:00.000Z',
+    ]
+    date_end = '2022-02-01T15:00:00.000Z'
+    result = {
+        'items': [
+            {
+                'type': 'CATEGORY',
+                'name': 'Категория',
+                'id': 'id',
+                'price': None,
+                'parentId': None,
+                'date': dates[0],
+            },
+            {
+                'type': 'CATEGORY',
+                'name': 'Категория',
+                'id': 'id',
+                'price': 100,
+                'parentId': None,
+                'date': dates[1],
+            },
+            {
+                'type': 'CATEGORY',
+                'name': 'Категория',
+                'id': 'id',
+                'price': 200,
+                'parentId': None,
+                'date': dates[2],
+            },
+        ]
+    }
+    response = await client.post(
+        '/imports',
+        json={
+            'items': [
+                {
+                    'type': 'CATEGORY',
+                    'name': 'Категория',
+                    'id': 'id',
+                }
+            ],
+            'updateDate': dates[0],
+        },
+    )
+    assert response.status_code == 200, response.json()
+    response = await client.post(
+        '/imports',
+        json={
+            'items': [
+                {
+                    'type': 'OFFER',
+                    'name': 'Товар',
+                    'id': 'id_1',
+                    'price': 100,
+                    'parentId': 'id',
+                }
+            ],
+            'updateDate': dates[1],
+        },
+    )
+    assert response.status_code == 200, response.json()
+    response = await client.post(
+        '/imports',
+        json={
+            'items': [
+                {
+                    'type': 'OFFER',
+                    'name': 'Товар',
+                    'id': 'id_1',
+                    'price': 200,
+                    'parentId': 'id',
+                }
+            ],
+            'updateDate': dates[2],
+        },
+    )
+    assert response.status_code == 200, response.json()
+
+    response = await client.get(
+        f'/node/id/statistic?' f'date_start={dates[0]}&' f'date_end={date_end}'
+    )
+    assert response.status_code == 200, response.json()
+
+    response_json = response.json()
+    sort_items(response_json)
+    sort_items(result)
+    assert response_json == result, f'see {print_diff(result, response_json)}'
