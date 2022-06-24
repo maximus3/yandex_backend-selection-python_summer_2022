@@ -345,6 +345,8 @@ class ShopUnitProxy(BaseProxy):
         **kwargs: Any,
     ) -> bool:
         updated_models.add(self)
+        if 'date' in kwargs:
+            kwargs['dt_date'] = iso_8601_to_datetime(kwargs['date'])
         return super().update(session, **kwargs)
 
     def delete(self: ShopUnitProxyType, session: SessionType = None) -> bool:
