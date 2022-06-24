@@ -41,8 +41,8 @@ async def test_statistic_offer(
 
     response = await client.get(
         f'/node/{item_id}/statistic?'
-        f'date_start={date_start}&'
-        f'date_end={date_end}'
+        f'dateStart={date_start}&'
+        f'dateEnd={date_end}'
     )
     assert response.status_code == 200
 
@@ -68,8 +68,8 @@ async def test_statistic_offer(
 
     response = await client.get(
         f'/node/{item_id}/statistic?'
-        f'date_start={date_start}&'
-        f'date_end={date_end}'
+        f'dateStart={date_start}&'
+        f'dateEnd={date_end}'
     )
     assert response.status_code == 200
 
@@ -82,8 +82,8 @@ async def test_statistic_offer(
 
     response = await client.get(
         f'/node/{item_id}/statistic?'
-        f'date_start={date_start}&'
-        f'date_end={date_end}'
+        f'dateStart={date_start}&'
+        f'dateEnd={date_end}'
     )
     assert response.status_code == 200
 
@@ -175,7 +175,7 @@ async def test_statistic_cat(client):
     assert response.status_code == 200, response.json()
 
     response = await client.get(
-        f'/node/id/statistic?' f'date_start={dates[0]}&' f'date_end={date_end}'
+        f'/node/id/statistic?dateStart={dates[0]}&dateEnd={date_end}'
     )
     assert response.status_code == 200, response.json()
 

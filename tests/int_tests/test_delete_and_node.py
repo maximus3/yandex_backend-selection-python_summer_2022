@@ -21,7 +21,7 @@ async def test_statistic_get_deleted_and_children_in_response(
             item_id = item['id']
             response = await client.get(
                 f'/node/{item_id}/statistic?'
-                f'date_start={date_start}&'
-                f'date_end={date_end}'
+                f'dateStart={date_start}&'
+                f'dateEnd={date_end}'
             )
             assert response.status_code == 404, response.json()

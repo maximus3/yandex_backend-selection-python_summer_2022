@@ -23,18 +23,18 @@ router = APIRouter(
     '/{item_id}/statistic', response_model=ShopUnitStatisticResponseSchema
 )
 async def statistic(
-    item_id: str, date_start: str, date_end: str
+    item_id: str, dateStart: str, dateEnd: str
 ) -> Union[ShopUnitStatisticResponseSchema, list[dict[str, Any]]]:
     try:
-        dt_date_start = iso_8601_to_datetime(date_start)
-        dt_date_end = iso_8601_to_datetime(date_end)
+        dt_date_start = iso_8601_to_datetime(dateStart)
+        dt_date_end = iso_8601_to_datetime(dateEnd)
     except ValueError as exc:
         raise HTTPException(status_code=400) from exc
     logger.debug(
         'Getting statistic for item %s from %s to %s',
         item_id,
-        date_start,
-        date_end,
+        dateStart,
+        dateEnd,
     )
     model = ShopUnitProxy.get(id=item_id)
     if model is None:

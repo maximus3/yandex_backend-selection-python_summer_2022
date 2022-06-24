@@ -24,8 +24,8 @@ async def test_statistic_empty(
     )
     response = await client.get(
         f'/node/{import_batches_data[0]["items"][0]["id"]}/statistic?'
-        f'date_start={date_start}&'
-        f'date_end={date_end}'
+        f'dateStart={date_start}&'
+        f'dateEnd={date_end}'
     )
     assert response.status_code == 200
 
@@ -43,8 +43,8 @@ async def test_statistic_ok(
     )
     response = await client.get(
         f'/node/{import_batches_data[0]["items"][0]["id"]}/statistic?'
-        f'date_start={date_start}&'
-        f'date_end={date_end}'
+        f'dateStart={date_start}&'
+        f'dateEnd={date_end}'
     )
     assert response.status_code == 200
 
