@@ -17,7 +17,7 @@ ENV POETRY_VERSION=1.1.13
 ARG ENVIRONMENT=development
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
+    build-essential libpq-dev python3-dev \
     && apt-get autoclean && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*  \

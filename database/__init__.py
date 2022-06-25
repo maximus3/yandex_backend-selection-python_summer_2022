@@ -26,5 +26,4 @@ def create_session(**kwargs: Any) -> SessionType:
 
 
 def create_all() -> None:  # pragma: no cover
-    if not (BASE_DIR / cfg.DATABASE_NAME).exists():
-        Base.metadata.create_all(engine)
+    Base.metadata.create_all(engine)
