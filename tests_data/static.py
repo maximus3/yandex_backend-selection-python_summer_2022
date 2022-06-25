@@ -365,7 +365,7 @@ IMPORTS_AND_NODES_DATA = [
 ]
 
 
-def import_batches_proxy_data(): # pragma: no cover
+def import_batches_proxy_data():  # pragma: no cover
     return (
         [proxy.ShopUnitProxy for _ in range(len(IMPORT_BATCHES))],
         [schemas.ShopUnitSchema for _ in range(len(IMPORT_BATCHES))],
@@ -373,13 +373,13 @@ def import_batches_proxy_data(): # pragma: no cover
     )
 
 
-def shop_unit_proxy_data(): # pragma: no cover
+def shop_unit_proxy_data():  # pragma: no cover
     return [
         import_batches_proxy_data(),
     ]
 
 
-def shop_unit_proxy_data_single(): # pragma: no cover
+def shop_unit_proxy_data_single():  # pragma: no cover
     return [
         (
             proxy.ShopUnitProxy,

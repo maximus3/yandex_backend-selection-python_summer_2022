@@ -14,7 +14,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 class ConfigData(BaseSettings):
     # DATABASE_ENGINE: str = Field('sqlite:///data.db', env='DATABASE_ENGINE')
-    DATABASE_ENGINE: str = Field('postgresql://pguser:pgpswd@localhost:5432/data', env='DATABASE_ENGINE')
+    DATABASE_ENGINE: str = Field(
+        'postgresql://pguser:pgpswd@localhost:5432/data', env='DATABASE_ENGINE'
+    )
     DATABASE_NAME: str = Field('data.db', env='DATABASE_NAME')
     debug: bool = Field(True, env='DEBUG')
     port: int = Field(80, env='PORT')
