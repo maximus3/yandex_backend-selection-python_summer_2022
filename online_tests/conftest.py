@@ -1,6 +1,7 @@
 import pytest
 from httpx import AsyncClient
 
+from online_tests import API_BASEURL
 from tests_data.static import (
     EXPECTED_STATISTIC,
     EXPECTED_TREE,
@@ -8,8 +9,6 @@ from tests_data.static import (
     IMPORTS_AND_NODES_DATA,
 )
 from tests_data.utils import clear_used_ids
-
-API_BASEURL = 'http://localhost:80/'
 
 
 @pytest.fixture()
