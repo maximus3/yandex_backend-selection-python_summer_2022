@@ -42,4 +42,4 @@ COPY tests tests
 COPY tests_data tests_data
 
 ENTRYPOINT []
-CMD ["make", "run"]
+CMD ["make", "up"]
