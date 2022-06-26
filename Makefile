@@ -33,8 +33,8 @@ venv: ## Create virtual environment, no need in docker
 install: ## Install dependencies
 	poetry install --no-interaction --no-ansi
 
-.PHONY: run
-run: ## Run App
+.PHONY: up
+up: ## Run App
 	$(POETRY_RUN) python -m app
 
 .PHONY: test
