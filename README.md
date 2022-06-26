@@ -34,8 +34,11 @@ sudo chown -R 5050:5050 pgadmin
 ### Run app
     make up
 
-### Run tests
+### Run unit tests
     make test
+
+### Run online unit tests
+    make online-test
 
 ### Run linters
     make lint

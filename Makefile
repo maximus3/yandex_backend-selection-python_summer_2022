@@ -43,7 +43,8 @@ test: ## Runs pytest with coverage
 
 .PHONY: online-test
 online-test: ## Runs online tests
-	$(POETRY_RUN) pytest online_tests --verbosity=2 --showlocals --log-level=DEBUG
+	$(POETRY_RUN) python -m online_tests
+	$(POETRY_RUN) pytest online_tests --verbosity=2 --showlocals --log-level=DEBUG --no-cov
 
 .PHONY: test-fast
 test-fast: ## Runs pytest with exitfirst
